@@ -1,0 +1,84 @@
+# --- General / OS ---
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+._*
+
+# Ignore log files
+*.log
+
+# Ignore editor and IDE directories
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Python ---
+# Ignore virtual environment directories
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# Ignore Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Ignore local environment files (VERY IMPORTANT for secrets)
+.env
+.env.*
+!.env.example
+
+# Ignore testing and coverage reports
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# --- Terraform ---
+# Ignore local Terraform directories and state files (EXTREMELY IMPORTANT for secrets and state management)
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+*.tfplan
+*.tfstate
+*.tfstate.*
+
+# Ignore crash log files
+crash.log
+crash.*.log
+
+# --- Ansible ---
+# Ignore Ansible retry files which are created when a task fails
+*.retry
+
+# --- Kubernetes ---
+# Ignore local Kubeconfig files (should not be in the repo anyway)
+kubeconfig
+*.kubeconfig
