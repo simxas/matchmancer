@@ -11,12 +11,12 @@ terraform {
   }
 }
 
-# Provider configuration - will automatically use HCLOUD_TOKEN env var
+# provider configuration - will automatically use HCLOUD_TOKEN env var
 provider "hcloud" {
-  # Token is read from HCLOUD_TOKEN environment variable
+  # token is read from HCLOUD_TOKEN environment variable
 }
 
-# Auto-detect my current public IP
+# auto-detect my current public IP
 data "http" "my_ip" {
   url = "https://ipv4.icanhazip.com"
 }
@@ -31,11 +31,21 @@ locals {
   my_ip         = "${trimspace(data.http.my_ip.response_body)}/32"
 }
 
-# Use the network module
+# use the network module
 module "network" {
   source            = "../../modules/network"
   network_name      = var.network_name
   environment       = local.environment
-  ssh_allowed_ips   = [local.my_ip]  # Uses auto-detected IP
   labels            = local.common_labels
+}
+
+# use bastion module
+module "bastion" {
+  source = "../../modules/bastion"
+  bastion_server_name = var.bastion_server_name
+  environment = local.environment
+  private_network_id = module.network.network_id
+  private_network_subnet_id = module.network.subnet_id
+  ssh_allowed_ips = [local.my_ip]
+  labels = local.common_labels
 }
