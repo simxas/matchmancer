@@ -10,6 +10,18 @@ variable "bastion_server_name" {
     default = "matchmancer-dev-bastion"
 }
 
+variable "master_node_name" {
+    type        = string
+    description = "Name for the master node"
+    default     = "matchmancer-dev-k8s-master"
+}
+
+variable "worker_node_name_prefix" {
+    type        = string
+    description = "Name prefix for the worker node"
+    default     = "matchmancer-dev-k8s-worker"
+}
+
 variable "labels" {
     type        = map(string)
     description = "Labels for resources"

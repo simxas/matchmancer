@@ -49,3 +49,18 @@ module "bastion" {
   ssh_allowed_ips = [local.my_ip]
   labels = local.common_labels
 }
+
+# use Hetzner k8s nodes module
+module "k8s_cluster" {
+  source = "../../modules/k8s-cluster"
+  
+  environment                = local.environment
+  master_name                = var.master_node_name
+  worker_name_prefix         = var.worker_node_name_prefix
+  worker_count               = 2
+  private_network_id         = module.network.network_id
+  private_network_subnet_id  = module.network.subnet_id
+  subnet_ip_range            = module.network.subnet_ip_range
+  bastion_private_ip         = module.bastion.bastion_private_ip
+  labels                     = local.common_labels
+}
