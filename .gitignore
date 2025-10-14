@@ -82,3 +82,6 @@ crash.*.log
 # Ignore local Kubeconfig files (should not be in the repo anyway)
 kubeconfig
 *.kubeconfig
+
+project-plan.md
+project-structure.md

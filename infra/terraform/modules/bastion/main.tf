@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-# bastion server
+# The bastion server - our SSH jumpbox and NAT gateway in one
 resource "hcloud_server" "bastion" {
   name        = var.bastion_server_name
   image       = var.bastion_image_name
@@ -22,6 +22,7 @@ resource "hcloud_server" "bastion" {
 
   network {
     network_id = var.private_network_id
+    ip         = var.bastion_private_ip
   }
 
   firewall_ids  = [hcloud_firewall.bastion.id]
@@ -31,20 +32,24 @@ resource "hcloud_server" "bastion" {
   ]
 
   ssh_keys      = [var.ssh_key_name]
+
+  # Bootstrap the bastion with NAT gateway magic
+  user_data = templatefile("${path.module}/cloud-init.yaml", {})
 }
 
+# Lock down the bastion - only you can SSH in
 resource "hcloud_firewall" "bastion" {
     name            = "${var.bastion_server_name}-firewall"
     labels          = var.labels
 
-    # for ping
+    # Let ping work so we can check if it's alive
     rule {
         direction   = "in"
         protocol    = "icmp"
         source_ips  = var.environment == "prod" ? var.ssh_allowed_ips : ["0.0.0.0/0", "::/0"]
     }
-    
-    # ssh access
+
+    # SSH access only from your IP
     rule {
         direction   = "in"
         port        = "22"

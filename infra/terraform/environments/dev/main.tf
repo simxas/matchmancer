@@ -7,16 +7,15 @@ terraform {
     http   = {
       source = "hashicorp/http"
       version = "~> 3.0"
-    } 
+    }
   }
 }
 
-# provider configuration - will automatically use HCLOUD_TOKEN env var
+# Hetzner provider grabs the token from HCLOUD_TOKEN env var
 provider "hcloud" {
-  # token is read from HCLOUD_TOKEN environment variable
 }
 
-# auto-detect my current public IP
+# Figure out our public IP so we can lock down SSH access
 data "http" "my_ip" {
   url = "https://ipv4.icanhazip.com"
 }
@@ -31,29 +30,31 @@ locals {
   my_ip         = "${trimspace(data.http.my_ip.response_body)}/32"
 }
 
-# use the network module
+# Set up the private network with NAT routing
 module "network" {
-  source            = "../../modules/network"
-  network_name      = var.network_name
-  environment       = local.environment
-  labels            = local.common_labels
+  source       = "../../modules/network"
+  network_name = var.network_name
+  environment  = local.environment
+  labels       = local.common_labels
+  # bastion_private_ip uses default (10.0.1.1) from the module
 }
 
-# use bastion module
+# Create the bastion - our SSH gateway and NAT box
 module "bastion" {
-  source = "../../modules/bastion"
-  bastion_server_name = var.bastion_server_name
-  environment = local.environment
-  private_network_id = module.network.network_id
+  source                    = "../../modules/bastion"
+  bastion_server_name       = var.bastion_server_name
+  environment               = local.environment
+  private_network_id        = module.network.network_id
   private_network_subnet_id = module.network.subnet_id
-  ssh_allowed_ips = [local.my_ip]
-  labels = local.common_labels
+  ssh_allowed_ips           = [local.my_ip]
+  labels                    = local.common_labels
+  # bastion_private_ip uses default (10.0.1.1) from the module
 }
 
-# use Hetzner k8s nodes module
+# Spin up the k8s cluster - 1 master + 2 workers, all private
 module "k8s_cluster" {
   source = "../../modules/k8s-cluster"
-  
+
   environment                = local.environment
   master_name                = var.master_node_name
   worker_name_prefix         = var.worker_node_name_prefix

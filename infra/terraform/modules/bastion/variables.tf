@@ -37,6 +37,12 @@ variable "private_network_subnet_id" {
   description = "Subnet ID (for proper dependency ordering)"
 }
 
+variable "bastion_private_ip" {
+  type        = string
+  description = "Static private IP for bastion server (NAT gateway)"
+  default     = "10.0.1.1"
+}
+
 variable "ssh_key_name" {
   type        = string
   description = "SSH key name from Hetzner console"

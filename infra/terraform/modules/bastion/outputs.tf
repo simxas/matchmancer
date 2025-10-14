@@ -1,21 +1,19 @@
-# infra/terraform/modules/bastion/outputs.tf
-
 output "bastion_public_ipv4" {
   value       = hcloud_server.bastion.ipv4_address
-  description = "Public IPv4 address of the bastion server"
+  description = "The bastion's public IP - this is what you SSH into"
 }
 
 output "bastion_private_ip" {
   value       = one(hcloud_server.bastion.network).ip
-  description = "Private IP address of the bastion server"
+  description = "The bastion's private IP inside the network"
 }
 
 output "bastion_server_id" {
   value       = hcloud_server.bastion.id
-  description = "ID of the bastion server"
+  description = "Hetzner's ID for this server"
 }
 
 output "bastion_server_name" {
   value       = hcloud_server.bastion.name
-  description = "Name of the bastion server"
+  description = "The server's name in Hetzner Cloud"
 }

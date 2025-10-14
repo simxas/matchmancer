@@ -26,6 +26,12 @@ variable "subnet_ip_range" {
     default     = "10.0.1.0/24"
 }
 
+variable "bastion_private_ip" {
+  type        = string
+  description = "Private IP of bastion server for NAT gateway routing"
+  default     = "10.0.1.1"
+}
+
 variable "labels" {
   type          = map(string)
   description   = "Labels for resources"

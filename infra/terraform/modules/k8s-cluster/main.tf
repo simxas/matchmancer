@@ -7,6 +7,7 @@ terraform {
   }
 }
 
+# The k8s master node - runs the control plane, no public IP
 resource "hcloud_server" "master" {
   name        = var.master_name
   image       = var.image_name
@@ -30,6 +31,7 @@ resource "hcloud_server" "master" {
   depends_on = [var.private_network_subnet_id]
 }
 
+# The k8s worker nodes - where our apps actually run
 resource "hcloud_server" "workers" {
   count       = var.worker_count
   name        = "${var.worker_name_prefix}-${count.index + 1}"
@@ -54,10 +56,12 @@ resource "hcloud_server" "workers" {
   depends_on = [var.private_network_subnet_id]
 }
 
+# Master firewall - keep it locked down tight
 resource "hcloud_firewall" "master" {
   name   = "${var.master_name}-firewall"
   labels = var.labels
 
+  # SSH but only from the bastion
   rule {
     direction  = "in"
     port       = "22"
@@ -65,6 +69,7 @@ resource "hcloud_firewall" "master" {
     source_ips = ["${var.bastion_private_ip}/32"]
   }
 
+  # Kubernetes API - bastion needs this for kubectl access
   rule {
     direction  = "in"
     port       = "6443"
@@ -72,6 +77,7 @@ resource "hcloud_firewall" "master" {
     source_ips = ["${var.bastion_private_ip}/32"]
   }
 
+  # Let all the k8s nodes talk to each other freely
   rule {
     direction  = "in"
     protocol   = "tcp"
@@ -86,6 +92,7 @@ resource "hcloud_firewall" "master" {
     source_ips = [var.subnet_ip_range]
   }
 
+  # Ping between nodes is handy for debugging
   rule {
     direction  = "in"
     protocol   = "icmp"
@@ -93,10 +100,12 @@ resource "hcloud_firewall" "master" {
   }
 }
 
+# Worker firewall - these will also need to accept load balancer traffic later
 resource "hcloud_firewall" "workers" {
   name   = "${var.worker_name_prefix}-firewall"
   labels = var.labels
 
+  # SSH but only from the bastion
   rule {
     direction  = "in"
     port       = "22"
@@ -104,6 +113,7 @@ resource "hcloud_firewall" "workers" {
     source_ips = ["${var.bastion_private_ip}/32"]
   }
 
+  # Let all the k8s nodes talk to each other freely
   rule {
     direction  = "in"
     protocol   = "tcp"
@@ -118,6 +128,7 @@ resource "hcloud_firewall" "workers" {
     source_ips = [var.subnet_ip_range]
   }
 
+  # Ping between nodes is handy for debugging
   rule {
     direction  = "in"
     protocol   = "icmp"

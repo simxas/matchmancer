@@ -1,0 +1,32 @@
+#cloud-config
+
+# Keep the system fresh with latest updates
+package_update: true
+package_upgrade: true
+
+# Make IP forwarding stick around after reboots
+write_files:
+  - path: /etc/sysctl.d/99-ip-forward.conf
+    content: |
+      net.ipv4.ip_forward=1
+      net.ipv6.conf.all.forwarding=1
+    owner: root:root
+    permissions: '0644'
+
+# Run these commands on first boot
+runcmd:
+  # Turn on IP forwarding right now (don't wait for reboot)
+  - sysctl -w net.ipv4.ip_forward=1
+  - sysctl -w net.ipv6.conf.all.forwarding=1
+
+  # Set up NAT so our private k8s nodes can reach the internet
+  - iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+  # Install iptables-persistent without asking questions
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y iptables-persistent
+
+  # Save the iptables rules so they survive reboots
+  - netfilter-persistent save
+
+  # Leave a breadcrumb in the logs
+  - echo "NAT gateway is ready at $(date)" >> /var/log/cloud-init-nat.log
