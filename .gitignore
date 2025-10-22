@@ -83,5 +83,8 @@ crash.*.log
 kubeconfig
 *.kubeconfig
 
+# --- my stuff ---
 project-plan.md
 project-structure.md
+NEXT_TASK.md
+CLAUDE.md

@@ -69,6 +69,12 @@ variable "bastion_private_ip" {
   description = "Private IP of bastion server for SSH access"
 }
 
+variable "load_balancer_private_ip" {
+  type        = string
+  description = "Private IP of load balancer for firewall rules"
+  default     = "10.0.1.2"
+}
+
 variable "ssh_key_name" {
   type        = string
   description = "SSH key name from Hetzner console"

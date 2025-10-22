@@ -32,3 +32,13 @@ output "k8s_worker_private_ips" {
   description = "The worker IPs (load balancer will target these)"
   value       = module.k8s_cluster.worker_private_ips
 }
+
+output "load_balancer_public_ip" {
+  description = "Public IP of the load balancer (use for DNS)"
+  value       = module.load_balancer.load_balancer_public_ip
+}
+
+output "load_balancer_private_ip" {
+  description = "Private IP of the load balancer"
+  value       = module.load_balancer.load_balancer_private_ip
+}

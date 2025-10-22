@@ -63,5 +63,19 @@ module "k8s_cluster" {
   private_network_subnet_id  = module.network.subnet_id
   subnet_ip_range            = module.network.subnet_ip_range
   bastion_private_ip         = module.bastion.bastion_private_ip
+  load_balancer_private_ip   = module.load_balancer.load_balancer_private_ip
   labels                     = local.common_labels
+}
+
+# Create the load balancer - public entry point for web traffic
+module "load_balancer" {
+  source = "../../modules/load-balancer"
+
+  environment                = local.environment
+  load_balancer_name         = var.load_balancer_name
+  private_network_id         = module.network.network_id
+  private_network_subnet_id  = module.network.subnet_id
+  bastion_private_ip         = module.bastion.bastion_private_ip
+  labels                     = local.common_labels
+  # load_balancer_private_ip uses default (10.0.1.2) from the module
 }

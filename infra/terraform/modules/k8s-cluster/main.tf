@@ -100,7 +100,7 @@ resource "hcloud_firewall" "master" {
   }
 }
 
-# Worker firewall - these will also need to accept load balancer traffic later
+# Worker firewall - accepts traffic from load balancer and cluster
 resource "hcloud_firewall" "workers" {
   name   = "${var.worker_name_prefix}-firewall"
   labels = var.labels
@@ -111,6 +111,22 @@ resource "hcloud_firewall" "workers" {
     port       = "22"
     protocol   = "tcp"
     source_ips = ["${var.bastion_private_ip}/32"]
+  }
+
+  # HTTP from load balancer
+  rule {
+    direction  = "in"
+    port       = "80"
+    protocol   = "tcp"
+    source_ips = ["${var.load_balancer_private_ip}/32"]
+  }
+
+  # HTTPS from load balancer
+  rule {
+    direction  = "in"
+    port       = "443"
+    protocol   = "tcp"
+    source_ips = ["${var.load_balancer_private_ip}/32"]
   }
 
   # Let all the k8s nodes talk to each other freely
