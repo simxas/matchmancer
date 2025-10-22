@@ -11,7 +11,7 @@ variable "load_balancer_name" {
 variable "server_type" {
   type        = string
   description = "Server type/size for load balancer"
-  default     = "cx22"
+  default     = "cx23"
 }
 
 variable "image_name" {

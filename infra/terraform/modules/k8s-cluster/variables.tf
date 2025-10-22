@@ -28,7 +28,7 @@ variable "image_name" {
 variable "server_type" {
   type        = string
   description = "Server type for all nodes"
-  default     = "cx22"
+  default     = "cx23"
 }
 
 variable "location" {

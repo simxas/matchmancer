@@ -18,7 +18,7 @@ variable "bastion_image_name" {
 variable "bastion_server_type" {
   type        = string
   description = "Server type/size for bastion"
-  default     = "cx22"
+  default     = "cx23"
 }
 
 variable "bastion_server_location" {
